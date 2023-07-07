@@ -34,14 +34,14 @@
     }
 
     .table td, .table th {
-        padding: .40rem;
+        padding: .2rem;
         vertical-align: top;
         border-top: 1px solid #dee2e6;
     }
 
     .modal-dialog {
-        width: 900px;
-        margin: 30px auto;
+        width: auto;
+        margin: 10px auto;
     }
 </style>
 
@@ -50,18 +50,18 @@
     <form asp-controller="Customer" asp-antiforgery="true" asp-action="Index" method="post">
         <div class="card card-default">
             <div class="card-header">
-                <div class="form-row">
-                    <div class="form-group col-md-4">
+                <div class="card-body dataTable-search-form">
+                    <div class="form-group col-md-12">
                         <input asp-for="Search" placeholder="Search" class="form-control" />
                     </div>
-                    <div class="form-group col-md-4">
-                        <button type="submit" id="btnsubmit" class="btn btn-success mr-1"><i class="fas fa-search"></i> Search</button>
+                    <div class="form-group col-md-12">
+                        <button type="submit" id="btnsubmit" class="btn btn-success mr-1 btn-sm"><i class="fas fa-search"></i> Search</button>
 
-                        <button type="submit" id="btnclear" class="btn btn-danger mr-1"><i class="fas fa-redo-alt"></i> Clear</button>
+                        <button type="submit" id="btnclear" class="btn btn-danger mr-1 btn-sm"><i class="fas fa-redo-alt"></i> Clear</button>
 
-                        <button type="button" id="btnAddCustomer" data-toggle="modal" data-target="#customerModal" class="btn btn-info mr-1"><i class="fas fa-plus-square"></i> Add Customer</button>
+                        <button type="button" id="btnAddCustomer" data-toggle="modal" data-target="#customerModal" class="btn btn-info mr-1 btn-sm"><i class="fas fa-plus-square"></i> Customer</button>
                     </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-12">
                         @if (Model.CustomersPagedList != null && Model.CustomersPagedList.Count > 0)
                         {
                             @Html.PagedListPager(Model.CustomersPagedList, page => Url.Action("Index", new { page = page, sortby = Model.sortBy, Search = Model.Search }), new X.PagedList.Mvc.Core.Common.PagedListRenderOptions() { DisplayItemSliceAndTotal = false, ContainerDivClasses = new[] { "pagination pagination-sm m-0 float-right" }, LiElementClasses = new[] { "page-item" }, PageClasses = new[] { "page-link" }, })
@@ -70,7 +70,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-hover text-nowrap table-bordered">
+                <table class="table table-bordered table-hover dt-responsive nowrap w-100">
                     <thead style="background-color: #dbeeff">
                         <trow sortby="@Model.sortBy" pagesize="@Model.pageSize" isAsc="@Model.isAsc" search="@Model.Search"></trow>
                     </thead>

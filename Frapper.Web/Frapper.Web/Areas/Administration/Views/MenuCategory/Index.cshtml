@@ -7,20 +7,26 @@
 
 
 <div class="col-md-12">
-    <div class="card card-default">
+    <div class="card card-success">
         <div class="card-header">
-            <h3 class="card-title">All</h3>
+            <h3 class="card-title">Menu Category List</h3>
+        </div>
+        <div class="card-body dataTable-search-form">
+            <div class="row">
+                <div class="col-md-12 text-left">
+                    <a class="btn btn-success btn-sm" href="/Administration/MenuCategory/Create"><i class="fas fa-plus"></i> Menu</a>
+                </div>
+            </div>
         </div>
         <div class="card-body">
-            <table id="MenuCategoryDataTable" class="table table-bordered table-hover">
+            <table id="MenuCategoryDataTable" class="table table-bordered table-hover dt-responsive nowrap w-100">
                 <thead>
                     <tr>
-                        <th>MenuCategoryId</th>
-                        <th>MenuCategoryName</th>
-                        <th>RoleName</th>
+                        <th>Menu CategoryId</th>
+                        <th>Menu Category Name</th>
+                        <th>Role Name</th>
                         <th>Status</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
             </table>
@@ -39,8 +45,10 @@
     <script>
         $(document).ready(function () {
             $('#MenuCategoryDataTable').DataTable({
+                "dom": 'lBfrtip',
                 "processing": true,
                 "serverSide": true,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
                 "filter": true,
                 "ajax": {
                     "url": "/Administration/MenuCategory/GridAllMenuCategory",
@@ -68,11 +76,11 @@
                     { "data": "RoleName", "name": "Role Name", "autoWidth": true },
                     { "data": "Status", "name": "Status", "autoWidth": true },
                     {
-                        "render": function (data, type, full, meta) { return '<a class="btn btn-primary" href="/Administration/MenuCategory/Edit/' + full.MenuCategoryId + '"> Edit</a>'; }
-                    },
-                    {
-                        "render": function (data, type, full, meta) {
-                            return ' <button type="button" class="btn btn-danger" onclick="Delete(' + full.MenuCategoryId + ');"> Delete </button>';
+                        "render": function (data, type, full, meta) { 
+                            var buttons = "";
+                            buttons += '<a href="/Administration/MenuCategory/Edit/' + full.MenuCategoryId + '" class="btn btn-xs btn-warning"><i class="fas fa-pen"></i> Edit</a>&nbsp;'
+                            buttons += '<button type="button" class="btn btn-xs btn-danger" onclick="Delete(' + full.MenuCategoryId + ');"><i class="fas fa-trash"></i> Delete </button>';
+                            return buttons;
                         }
                     }
                 ]

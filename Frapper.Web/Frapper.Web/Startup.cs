@@ -1,4 +1,3 @@
-
 using AutoMapper;
 using DinkToPdf;
 using DinkToPdf.Contracts;
@@ -30,7 +29,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
 
-
 namespace Frapper.Web
 {
     extern alias signed;
@@ -53,7 +51,8 @@ namespace Frapper.Web
             services.AddAutoMapper(typeof(Startup).Assembly);
 
             var connection = Configuration.GetConnectionString("DatabaseConnection");
-            services.AddDbContext<FrapperDbContext>(options => options.UseSqlServer(connection));
+            services.AddDbContext<FrapperDbContext>(options => options.UseSqlServer(connection,
+                b => b.MigrationsAssembly("Frapper.Web")));
             services.Configure<AppSettings>(Configuration.GetSection("ApplicationSettings"));
             services.Configure<ConnectionStrings>(Configuration.GetSection("ConnectionStrings"));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -61,6 +60,7 @@ namespace Frapper.Web
             var redisAppsettingValues = Configuration.GetSection("RedisServer").Get<RedisAppsetting>();
 
             #region AddDistributedRedisCache
+
             //services.AddDistributedRedisCache(setup =>
             //{
             //    setup.ConfigurationOptions = new signed::StackExchange.Redis.ConfigurationOptions();
@@ -74,11 +74,12 @@ namespace Frapper.Web
             //    setup.ConfigurationOptions.AbortOnConnectFail = false;
             //    setup.ConfigurationOptions.AllowAdmin = false;
             //    setup.ConfigurationOptions.Ssl = true;
-            //}); 
-            #endregion
+            //});
 
+            #endregion AddDistributedRedisCache
 
             #region Registering HealthChecks
+
             //services
             //        .AddHealthChecks()
             //        .AddSqlServer(connectionString: Configuration["ConnectionStrings:DatabaseConnection"],
@@ -92,18 +93,22 @@ namespace Frapper.Web
             //    {
             //        setup.SetEvaluationTimeInSeconds(5); //Configures the UI to poll for healthchecks updates every 5 seconds
             //    })
-            //    .AddSqlServerStorage(Configuration["ConnectionStrings:DatabaseConnection"]); 
-            #endregion
+            //    .AddSqlServerStorage(Configuration["ConnectionStrings:DatabaseConnection"]);
 
+            #endregion Registering HealthChecks
 
-            #region Registering DinkToPdf 
-            // Registering DinkToPdf 
+            #region Registering DinkToPdf
+
+            // Registering DinkToPdf
             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-            #endregion
+
+            #endregion Registering DinkToPdf
 
             #region Registering ResourcesPath
-            services.AddLocalization(options => options.ResourcesPath = "Resources"); 
-            #endregion
+
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            #endregion Registering ResourcesPath
 
             services.AddMvc()
                 .AddNewtonsoftJson(options =>
@@ -122,8 +127,6 @@ namespace Frapper.Web
                         return factory.Create("SharedResource", assemblyName.Name);
                     };
                 });
-
-
 
             // For FileUpload
             services.Configure<FormOptions>(x =>
@@ -157,8 +160,8 @@ namespace Frapper.Web
                 };
             });
 
-
             #region Localization
+
             services.Configure<RequestLocalizationOptions>(options =>
               {
                   var supportedCultures = new[]
@@ -170,18 +173,19 @@ namespace Frapper.Web
                     new CultureInfo("de"),
                   };
 
-                // State what the default culture for your application is. This will be used if no specific culture
-                // can be determined for a given request.
-                options.DefaultRequestCulture = new RequestCulture("en");
+                  // State what the default culture for your application is. This will be used if no specific culture
+                  // can be determined for a given request.
+                  options.DefaultRequestCulture = new RequestCulture("en");
 
-                // You must explicitly state which cultures your application supports.
-                // These are the cultures the app supports for formatting numbers, dates, etc.
-                options.SupportedCultures = supportedCultures;
+                  // You must explicitly state which cultures your application supports.
+                  // These are the cultures the app supports for formatting numbers, dates, etc.
+                  options.SupportedCultures = supportedCultures;
 
-                // These are the cultures the app supports for UI strings, i.e. we have localized resources for.
-                options.SupportedUICultures = supportedCultures;
-              }); 
-            #endregion
+                  // These are the cultures the app supports for UI strings, i.e. we have localized resources for.
+                  options.SupportedUICultures = supportedCultures;
+              });
+
+            #endregion Localization
 
             services.AddControllersWithViews(
                     config =>
@@ -197,10 +201,11 @@ namespace Frapper.Web
 
             services.AddControllers();
 
-            // using Memory Cache 
+            // using Memory Cache
             services.AddMemoryCache();
 
             #region Registering AddDNTCaptcha
+
             //  AddDNTCaptcha
             services.AddDNTCaptcha(options =>
                     // options.UseSessionStorageProvider() // -> It doesn't rely on the server or client's times. Also it's the safest one.
@@ -210,13 +215,13 @@ namespace Frapper.Web
 
                 // Don't set this line (remove it) to use the installed system's fonts (FontName = "Tahoma").
                 // Or if you want to use a custom font, make sure that font is present in the wwwroot/fonts folder and also use a good and complete font!
-                // .UseCustomFont(Path.Combine(_env.WebRootPath, "fonts", "name.ttf")) 
+                // .UseCustomFont(Path.Combine(_env.WebRootPath, "fonts", "name.ttf"))
                 // .AbsoluteExpiration(minutes: 7)
                 .ShowThousandsSeparators(false)
 
-            ); 
-            #endregion
+            );
 
+            #endregion Registering AddDNTCaptcha
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -227,8 +232,7 @@ namespace Frapper.Web
                 app.UseDeveloperExceptionPage();
             }
 
-
-            // Logging Error 
+            // Logging Error
             //app.UseExceptional();
 
             // Redirecting to Error Page with Status Code
@@ -273,6 +277,7 @@ namespace Frapper.Web
                     pattern: "{controller=Portal}/{action=Login}/{id?}");
 
                 #region HealthChecks
+
                 //// HealthChecks
                 //endpoints.MapHealthChecks("/healthcheck", new HealthCheckOptions
                 //{
@@ -281,8 +286,9 @@ namespace Frapper.Web
                 //});
 
                 //// HealthChecks
-                //endpoints.MapHealthChecksUI(); 
-                #endregion
+                //endpoints.MapHealthChecksUI();
+
+                #endregion HealthChecks
             });
         }
     }
